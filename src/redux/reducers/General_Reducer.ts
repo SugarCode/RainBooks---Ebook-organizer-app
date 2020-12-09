@@ -1,5 +1,5 @@
 import {AnyAction} from 'redux';
-import {Open_Pdf} from "../types";
+import {Open_Pdf, SET_PAGE_DATA} from "../types";
 
 const initialOpen_Pdf: Open_Pdf = {} as Open_Pdf;
 
@@ -15,3 +15,4 @@ export const GeneralReducer = (state = initialOpen_Pdf, action: AnyAction) => {
             return state
     }
 }
+

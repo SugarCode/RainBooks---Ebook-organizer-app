@@ -12,3 +12,4 @@ export const SetOpenPdf = (data: Open_Pdf): ThunkAction <void, RootState, null, 
         })
     }
 }
+
