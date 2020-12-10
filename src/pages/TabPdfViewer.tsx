@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { IonActionSheet, IonAlert, IonButton, IonButtons, IonContent, IonIcon, IonLabel, IonMenuButton, IonPage, IonSegment, IonSegmentButton, IonTitle, IonToolbar, useIonViewDidEnter, useIonViewWillLeave } from '@ionic/react';
+import { IonActionSheet, IonAlert, IonButton, IonButtons, IonContent, IonFab, IonFabButton, IonIcon, IonLabel, IonMenuButton, IonPage, IonSegment, IonSegmentButton, IonTitle, IonToolbar, useIonViewDidEnter, useIonViewWillLeave } from '@ionic/react';
 import { useDispatch, useSelector } from 'react-redux';
 import { SetOpenPdf } from '../redux/Actions/GeneralActions';
 import {Document, Outline, Page, pdfjs} from 'react-pdf';
 import Panzoom from '@panzoom/panzoom'
 
-import "./TabPdfViewerStyle.css"
+import "../theme/pdfViewerStyle.css"
 import { addCircleOutline, chevronBackOutline, chevronForwardOutline, cloudDoneSharp, listSharp, removeCircleOutline } from 'ionicons/icons';
 import { RootState } from '../redux/CreateStore';
 import { useFirebase } from 'react-redux-firebase';
+import { PDFPageProxy } from 'react-pdf/dist/Page';
 
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
@@ -26,8 +27,11 @@ const TabPdfViewer: React.FC = () => {
   const firebase = useFirebase();
   const openPdf = useSelector((state:RootState) => state.openPdf);
   const authData = useSelector((state: RootState)=> state.firebase.auth);
+  const settings = useSelector((state: RootState)=>state.settings)
   const [scale, setScale] = useState<number>(1);
   const [showJumpInput, setShowJumpInput] = useState<boolean>(false);
+
+  const [pageText, setPageText] = useState<string>("");
 
   useIonViewWillLeave(()=>{
     dispatch(SetOpenPdf({
@@ -115,6 +119,15 @@ const TabPdfViewer: React.FC = () => {
         setPageNumber(parseInt(window.localStorage.getItem(bookName) || "1"))
       }
     }
+
+
+    setTimeout(()=>{
+      const settingsButton = document.querySelector(".settingsBtn");
+      console.log(settingsButton?.shadowRoot?.innerHTML)
+      if(settingsButton?.shadowRoot){
+        settingsButton.shadowRoot.querySelector('.button-native')?.removeAttribute("href")
+      }
+    }, 1000)
   }, [openPdf]);
 
   // on page next prev happaned
@@ -131,6 +144,44 @@ const TabPdfViewer: React.FC = () => {
     }
     
   }, [pageNumber, openPdf.FileName])
+
+
+  const getText = (page:PDFPageProxy) => {
+    var fixFont = (fontHeight:number)=>{
+        if(fontHeight <= 10){
+            return 18
+        }else if(fontHeight > 14 && fontHeight <30){
+            return 26
+        }else if(fontHeight >= 30){
+            return 30
+        }else{
+            return 20
+        }
+    }
+    var textContainer = document.getElementById("textContainer");
+    page.getTextContent().then((textContent)=>{
+        console.log(textContent)
+        
+        var text = "";
+        var lastY= -1;
+        textContent.items.forEach((item, i) => {
+            if(lastY !== item.transform[5]){
+                if(lastY - item.transform[5] > 1){
+                    text +="<br /> "
+                }
+                lastY = item.transform[5];
+            }
+            text += `<span style="font-size: ${fixFont(item.height)}px">${item.str}</span>`;
+            if(i===textContent.items.length-1){
+              setPageText(text);
+              if(textContainer){
+                textContainer.innerHTML = text;
+              }
+            }
+            
+        });
+    })
+}
 
 
 
@@ -161,30 +212,40 @@ const TabPdfViewer: React.FC = () => {
         </IonButtons>
       </IonToolbar>
       
-      <IonContent fullscreen>
-        <Document
-          file={openPdf.FilePath}
-          className="document"
-          renderMode="canvas"
-          onLoadSuccess={(doc)=>{onDocumentLoadSuccess(doc)}}
-          
-        >
-          {/* <Outline></Outline> */}
-          <Page pageNumber={pageNumber}
-            width={window.innerWidth-20}
-            height={window.innerHeight}
-            renderAnnotationLayer={false}
-            renderTextLayer={true}
-            scale={scale}
-          ></Page>
-          
-        </Document>
-        <div className="prevBtn" onClick={()=>handleNavigationPage("prev")}>
-          <IonIcon icon={chevronBackOutline}></IonIcon>
+      <IonContent fullscreen class="contentContainer">
+        <div id="textContainer" style={{display: `${settings.TextOnly?"block":"none"}`}}></div>
+
+        <div className="pdfContaner" style={{display: `${settings.TextOnly?"none":"block"}`}}>
+          <Document
+            file={openPdf.FilePath}
+            className="document"
+            renderMode="canvas"
+            onLoadSuccess={(doc)=>{onDocumentLoadSuccess(doc)}}
+            
+          >
+            {/* <Outline></Outline> */}
+            <Page pageNumber={pageNumber}
+              width={window.innerWidth-20}
+              height={window.innerHeight}
+              renderAnnotationLayer={false}
+              renderTextLayer={true}
+              scale={scale}
+              onLoadSuccess={(page)=>getText(page)}
+            ></Page>
+            
+          </Document>
         </div>
-        <div className="nextBtn" onClick={()=>handleNavigationPage("next")}>
-          <IonIcon icon={chevronForwardOutline}></IonIcon>
-        </div>
+
+        <IonFab class="prevBtn" onClick={()=>handleNavigationPage("prev")} vertical="center" horizontal="start" slot="fixed">
+          <IonFabButton color="light">
+            <IonIcon icon={chevronBackOutline}></IonIcon>
+          </IonFabButton>
+        </IonFab>
+        <IonFab class="nextBtn" onClick={()=>handleNavigationPage("next")} vertical="center" horizontal="end" slot="fixed">
+          <IonFabButton color="light">
+            <IonIcon icon={chevronForwardOutline}></IonIcon>
+          </IonFabButton>
+        </IonFab>
       </IonContent>
 
       <IonAlert

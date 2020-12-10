@@ -2,6 +2,10 @@
 http://ionicframework.com/docs/theming/ */
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap');
 /** Ionic CSS Variables **/
+
+/* .settingsBtn::part(native){
+  border: 1px solid !important;
+} */
 *{
   font-family: "Roboto" !important;
 }

@@ -1,0 +1,40 @@
+@font-face {
+    font-family: LibreCaslonText-Regular;
+    src: url("../assets/fonts/textOnlyFonts/LibreCaslonText-Regular.ttf")
+}
+
+@font-face {
+    font-family: LibreCaslonText-Bold;
+    src: url("../assets/fonts/textOnlyFonts/LibreCaslonText-Bold.ttf")
+}
+
+@font-face {
+    font-family: LibreCaslonText-Italic;
+    src: url("../assets/fonts/textOnlyFonts/LibreCaslonText-Italic.ttf")
+}
+
+.bookTitleLabel{
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.document{
+    overflow: auto;
+}
+.prevBtn, .nextBtn{
+    opacity: 0.3;
+}
+
+#textContainer{
+    overflow: scroll;
+    word-wrap: break-word;
+    padding: 20px 20px 20px 20px;
+    
+    /* background-color: rgb(182, 179, 154); */
+}
+
+#textContainer * {
+    font-family: LibreCaslonText-Regular !important;
+    letter-spacing: 0.6px;
+    word-spacing: 3px;
+}

@@ -2,7 +2,7 @@ import { createStore, applyMiddleware, combineReducers } from 'redux';
 import thunk from 'redux-thunk';
 import { firebaseReducer } from 'react-redux-firebase';
 
-import {GeneralReducer} from "./reducers/General_Reducer";
+import {GeneralReducer, SettingsReducer} from "./reducers/General_Reducer";
 import { persistStore, persistReducer } from 'redux-persist'
 import localStorage from 'redux-persist/lib/storage'
 
@@ -10,12 +10,13 @@ import localStorage from 'redux-persist/lib/storage'
 const persistConfig = {
   key: 'rainbookroot',
   storage: localStorage,
-  blacklist: ['openPdf']
+  blacklist: ['openPdf', 'settings']
 }
 
 const rootReducer = combineReducers({
     firebase: firebaseReducer,
-    openPdf: GeneralReducer
+    openPdf: GeneralReducer,
+    settings: SettingsReducer
 });
 const persistRootReducer = persistReducer(persistConfig, rootReducer);
 
