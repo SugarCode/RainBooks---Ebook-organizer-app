@@ -10,7 +10,8 @@ export const GeneralReducer = (state = initialOpen_Pdf, action: AnyAction) => {
             return {
                 Pdf_Opened: action.payload.Pdf_Opened,
                 FilePath: action.payload.FilePath,
-                FileName: action.payload.FileName
+                FileName: action.payload.FileName,
+                FileUrl: action.payload.FileUrl
             }
         default:
             return state

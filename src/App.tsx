@@ -49,54 +49,57 @@ const App: React.FC = () => {
   const [openSettings, setOpenSettings] = useState<boolean>(false);
   const dispatch = useDispatch();
   const settings = useSelector((state: RootState)=>state.settings)
-
+  const auth = useSelector((state:any) => state.firebase.auth);
   useEffect(()=>{
     setTimeout(()=>{
       const settingsButton = document.querySelector(".settingsBtn");
-      console.log(settingsButton?.shadowRoot?.innerHTML)
       if(settingsButton?.shadowRoot){
-        settingsButton.shadowRoot.querySelector('.button-native')?.removeAttribute("href")
+        
+        settingsButton.shadowRoot.querySelector('.button-native')?.removeAttribute("href");
         settingsButton.shadowRoot.querySelector('.button-native')?.addEventListener("click", ()=>{
+          console.log("open settings")
           setOpenSettings(!openSettings)
         })
+
+        console.log(settingsButton?.shadowRoot?.innerHTML)
       }
-    }, 1000)
+    }, 2000)
   }, [])
 
-  const auth = useSelector((state:any) => state.firebase.auth);
+  
   return (
     <IonApp>
-      {/* {
+      {
         isEmpty(auth)
           ?<AppStartPage />
           :<IonReactRouter>
-            <IonTabs>
-              <IonRouterOutlet>
-                <Route path="/tab1" component={Tab1} exact={true} />
-                <Route path="/tab2" component={Tab2} exact={true} />
-                <Route path="/tab3" component={Tab3} />
-                <Route path="/tab-pdf-viewer" component={TabPdfViewer} />
-                <Route path="/" render={() => <Redirect to="/tab1" />} exact={true} />
-              </IonRouterOutlet>
-              <IonTabBar slot="bottom" 
-                // hidden={openPdf.Pdf_Opened === true?true:false}
-              >
-                <IonTabButton tab="tab1" href="/tab1">
-                  <IonIcon icon={bookOutline} />
-                </IonTabButton>
-                <IonTabButton tab="tab2" href="/tab2">
-                  <IonIcon icon={addCircleOutline} />
-                </IonTabButton>
-                <IonTabButton tab="tab3" href="/tab3">
-                  <IonIcon icon={settingsOutline} />
-                </IonTabButton>
-              </IonTabBar>
-            </IonTabs>
-          </IonReactRouter>
-      } */}
+          <IonTabs>
+            <IonRouterOutlet>
+              <Route path="/tab1" component={Tab1} exact={true} />
+              <Route path="/tab2" component={Tab2} exact={true} />
+              <Route path="/tab3" component={Tab3} />
+              <Route path="/tab-pdf-viewer" component={TabPdfViewer} />
+              <Route path="/" render={() => <Redirect to="/tab1" />} exact={true} />
+            </IonRouterOutlet>
+            <IonTabBar slot="bottom" 
+              // hidden={openPdf.Pdf_Opened === true?true:false}
+            >
+              <IonTabButton tab="tab1" href="/tab1">
+                <IonIcon icon={bookOutline} />
+              </IonTabButton>
+              <IonTabButton tab="tab2" href="/tab2">
+                <IonIcon icon={addCircleOutline} />
+              </IonTabButton>
+              <IonTabButton class="settingsBtn">
+                <IonIcon icon={settingsOutline} />
+              </IonTabButton>
+            </IonTabBar>
+          </IonTabs>
+    </IonReactRouter>
+      }
 
 {/* Delete the following element and uncomment the upper section */}
-      <IonReactRouter>
+      {/* <IonReactRouter>
             <IonTabs>
               <IonRouterOutlet>
                 <Route path="/tab1" component={Tab1} exact={true} />
@@ -119,7 +122,7 @@ const App: React.FC = () => {
                 </IonTabButton>
               </IonTabBar>
             </IonTabs>
-      </IonReactRouter>
+      </IonReactRouter> */}
 
             
 

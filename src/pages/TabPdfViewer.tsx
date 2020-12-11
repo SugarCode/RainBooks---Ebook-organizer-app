@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { IonActionSheet, IonAlert, IonButton, IonButtons, IonContent, IonFab, IonFabButton, IonIcon, IonLabel, IonMenuButton, IonPage, IonSegment, IonSegmentButton, IonTitle, IonToolbar, useIonViewDidEnter, useIonViewWillLeave } from '@ionic/react';
+import { IonActionSheet, IonAlert, IonButton, IonButtons, IonContent, IonFab, IonFabButton, IonIcon, IonLabel, IonLoading, IonMenuButton, IonPage, IonSegment, IonSegmentButton, IonTitle, IonToast, IonToolbar, useIonViewDidEnter, useIonViewWillLeave } from '@ionic/react';
 import { useDispatch, useSelector } from 'react-redux';
 import { SetOpenPdf } from '../redux/Actions/GeneralActions';
 import {Document, Outline, Page, pdfjs} from 'react-pdf';
-import Panzoom from '@panzoom/panzoom'
 
 import "../theme/pdfViewerStyle.css"
-import { addCircleOutline, chevronBackOutline, chevronForwardOutline, cloudDoneSharp, listSharp, removeCircleOutline } from 'ionicons/icons';
+import { addCircleOutline, chevronBackOutline, chevronForwardOutline, cloudDoneSharp, cloudOfflineSharp, cloudUploadSharp, listSharp, removeCircleOutline } from 'ionicons/icons';
 import { RootState } from '../redux/CreateStore';
 import { useFirebase } from 'react-redux-firebase';
 import { PDFPageProxy } from 'react-pdf/dist/Page';
@@ -20,6 +19,10 @@ function formatBytes(a:number,b=2){if(0===a)return"0 Bytes";const c=0>b?0:b,d=Ma
 
 
 const TabPdfViewer: React.FC = () => {
+  interface toastI {
+    show: boolean,
+    msg: string
+  }
   const [numPages, setNumPages] = useState<number>(0);
   const [pageNumber, setPageNumber] = useState<number>(1);
 
@@ -32,12 +35,15 @@ const TabPdfViewer: React.FC = () => {
   const [showJumpInput, setShowJumpInput] = useState<boolean>(false);
 
   const [pageText, setPageText] = useState<string>("");
+  const [fileExists, setFileExists] = useState<boolean>(true);
+  const [showToast, setShowToast] = useState<toastI>({show: false, msg: ""});
 
   useIonViewWillLeave(()=>{
     dispatch(SetOpenPdf({
       Pdf_Opened: false,
       FilePath: "",
-      FileName: ""
+      FileName: "",
+      FileUrl: ""
     }))
   });
 
@@ -51,7 +57,7 @@ const TabPdfViewer: React.FC = () => {
   const thumbmaker = (doc:pdfjs.PDFDocumentProxy) => {
     return new Promise((resolve, reject)=>{
       const imageMaker = async (page:pdfjs.PDFPageProxy) => {
-        const viewPort = page.getViewport({scale:1})
+        const viewPort = page.getViewport({scale:0.3})
         const widht = viewPort.width; const height = viewPort.height;
         var canvas = document.createElement("canvas");
         canvas.height = height; canvas.width = widht;
@@ -71,19 +77,28 @@ const TabPdfViewer: React.FC = () => {
   
   // Upload Book file
   const uploadFile = (doc:pdfjs.PDFDocumentProxy)=> {
-    const file = openPdf.FilePath;
-    const storagePath = dataPathMaker(file.name)
-    thumbmaker(doc).then((imageDataUri)=>{
-      const metaData  = {
-        customMetadata: {
-          "thumbnail": imageDataUri as string
-        }
-      }
-      let uploadtask = firebase.uploadFile(storagePath, file, storagePath, {metadata: metaData});
-      uploadtask.then((snapshot)=>{
-        console.log(snapshot)
-      }).catch(err=> console.log(err))
-    })
+      setShowToast({show: true, msg: `Uploading book - ${formatBytes(openPdf.FilePath.size)}`});
+      const file = openPdf.FilePath;
+      const storagePath = dataPathMaker(file.name)
+      thumbmaker(doc).then((imageDataUri)=>{
+        let uploadtask = firebase.uploadFile(storagePath, file, storagePath, {
+          metadataFactory: (uploadRes, firebase, metaData, downloadURL)=>{
+            return {
+              "fileName": metaData.name,
+              "fullPath": metaData.fullPath,
+              "size": metaData.size,
+              "thumbnail": imageDataUri as string,
+              "storagePath": storagePath,
+              "downloadUrl": downloadURL
+            }
+          }
+        });
+        uploadtask.then((snapshot)=>{
+          console.log(snapshot)
+          setFileExists(true)
+          setShowToast({show: true, msg: "Book uploaded"});
+        }).catch(err=> setFileExists(false))
+      })
     
     
   }
@@ -91,8 +106,29 @@ const TabPdfViewer: React.FC = () => {
   // On pdf document loaded event
   const onDocumentLoadSuccess = (doc:pdfjs.PDFDocumentProxy) => {
     setNumPages(doc.numPages);
-    // uploadFile(doc);
+    if(openPdf.FileName){
+      const dataPath = dataPathMaker(openPdf.FileName)
+      try {
+          var storageRef = firebase.storage().ref(dataPath).child(openPdf.FileName);
+          storageRef.getDownloadURL().then(()=>{
+              setFileExists(true);
+          }).catch((err)=>{
+              console.log(err)
+              setFileExists(false);
+              uploadFile(doc);
+          })      
+      } catch (error) {
+        setFileExists(false);
+      }
+    }
+
+
+
   }
+
+  useEffect(()=>{
+    console.log(fileExists)
+  }, [fileExists])
 
   // Handle next and prev button click
   const handleNavigationPage = (action: string) => {
@@ -111,6 +147,7 @@ const TabPdfViewer: React.FC = () => {
   // on book load get the last read page number and set to current pageNumber state
   useEffect(()=>{
     if(openPdf.FileName){
+      console.log(formatBytes(openPdf.FilePath.size))
       const bookName:string = openPdf.FileName.replace(/ /g, '');
       if(window.localStorage.getItem(bookName) === null){
         window.localStorage.setItem(bookName, "1");
@@ -128,7 +165,7 @@ const TabPdfViewer: React.FC = () => {
         settingsButton.shadowRoot.querySelector('.button-native')?.removeAttribute("href")
       }
     }, 1000)
-  }, [openPdf]);
+  }, [openPdf.FileName]);
 
   // on page next prev happaned
   useEffect(()=> {
@@ -181,8 +218,7 @@ const TabPdfViewer: React.FC = () => {
             
         });
     })
-}
-
+  }
 
 
   return (
@@ -194,7 +230,9 @@ const TabPdfViewer: React.FC = () => {
           </IonButton>
             <IonLabel class="bookTitleLabel">{openPdf.FileName}</IonLabel>
           <IonButton color="dark">
-            <IonIcon icon={cloudDoneSharp}></IonIcon>
+            <IonIcon icon={
+              fileExists ? cloudDoneSharp : cloudOfflineSharp
+            }></IonIcon>
           </IonButton>
         </IonButtons>
 
@@ -217,11 +255,13 @@ const TabPdfViewer: React.FC = () => {
 
         <div className="pdfContaner" style={{display: `${settings.TextOnly?"none":"block"}`}}>
           <Document
-            file={openPdf.FilePath}
+            file={openPdf.FileUrl?openPdf.FileUrl:openPdf.FilePath}
             className="document"
             renderMode="canvas"
             onLoadSuccess={(doc)=>{onDocumentLoadSuccess(doc)}}
-            
+            loading={()=>(
+              <IonLoading isOpen={true} message="Getting your book" />
+            )}
           >
             {/* <Outline></Outline> */}
             <Page pageNumber={pageNumber}
@@ -279,6 +319,20 @@ const TabPdfViewer: React.FC = () => {
             }
           ]}
         />
+
+
+
+
+
+    <IonToast
+      isOpen={showToast.show}
+      onDidDismiss={() => setShowToast({show: false, msg: ""})}
+      message={showToast.msg}
+      position="top"
+      duration={2500}
+      translucent={true}
+      mode="ios"
+    />
     </IonPage>
   );
 };

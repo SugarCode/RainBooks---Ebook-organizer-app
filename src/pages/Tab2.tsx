@@ -1,5 +1,5 @@
-import React from 'react';
-import { IonAvatar, IonButton, IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle, IonContent, IonHeader, IonIcon, IonItem, IonLabel, IonList, IonPage, IonTitle, IonToolbar } from '@ionic/react';
+import React, { ChangeEvent, useState } from 'react';
+import { IonAvatar, IonButton, IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle, IonContent, IonHeader, IonIcon, IonItem, IonLabel, IonList, IonPage, IonTitle, IonToast, IonToolbar } from '@ionic/react';
 import ExploreContainer from '../components/ExploreContainer';
 import './Tab2.css';
 import { addOutline } from 'ionicons/icons';
@@ -12,16 +12,30 @@ import { useDispatch } from 'react-redux';
 import { SetOpenPdf } from '../redux/Actions/GeneralActions';
 
 const Tab2: React.FC = () => {
+  interface toastI {
+    show: boolean,
+    msg: string
+  }
+  const [showToast, setShowToast] = useState<toastI>({show: false, msg: ""});
   const history = useHistory();
   const dispatch = useDispatch();
 
-  const handleAddBook = (e:any)=> {
-    dispatch(SetOpenPdf({
-      Pdf_Opened: true,
-      FilePath: e.target.files[0],
-      FileName: e.target.files[0].name
-    }))
-    history.push("/tab-pdf-viewer")
+  const handleAddBook = (e:React.ChangeEvent<HTMLInputElement>)=> {
+    if(e.target.files){
+      const file = e.target.files[0];
+      console.log(file.type)
+      if(file.type === "application/pdf"){
+        dispatch(SetOpenPdf({
+          Pdf_Opened: true,
+          FilePath: file,
+          FileName: file.name
+        }))
+        history.push("/tab-pdf-viewer")
+      }
+    }else{
+      // for some reason mobile is not showing alert or toast
+      setShowToast({show: true, msg: "File type not supported"})
+    }
   }
 
   const AddBookPanel = ()=> {
@@ -36,7 +50,7 @@ const Tab2: React.FC = () => {
           <IonCardContent class="cardBody">
             <IonButton color="light" class="addBookButton">
               <IonIcon slot="start" icon={addOutline} /> Add new book
-              <input type="file" onChange={(e)=>handleAddBook(e)} accept="application/pdf" style={{ position: "absolute",opacity: "0", border: "1px solid black", height: "60px", width: "60px" }} ></input>
+              <input type="file" onChange={(e)=>handleAddBook(e)} accept="application/pdf" style={{ position: "absolute",opacity: "0", border: "1px solid black", height: "50px", width: "180px" }} ></input>
             </IonButton>
           </IonCardContent>
         </IonCard>
@@ -65,6 +79,16 @@ const Tab2: React.FC = () => {
             </IonLabel>
           </IonItem>
         </IonList>
+        
+      <IonToast
+      isOpen={showToast.show}
+      onDidDismiss={() => setShowToast({show: false, msg: ""})}
+      message={showToast.msg}
+      position="top"
+      duration={2500}
+      translucent={true}
+      mode="ios"
+    />
       </div>
     )
   }
@@ -81,6 +105,7 @@ const Tab2: React.FC = () => {
       <IonContent fullscreen>
         <AddBookPanel />
       </IonContent>
+
     </IonPage>
   );
 };

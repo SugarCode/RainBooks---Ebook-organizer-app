@@ -9,7 +9,8 @@ export const SETTINGS = "SETTINGS";
 export interface Open_Pdf {
     Pdf_Opened: boolean,
     FilePath: any,
-    FileName: string
+    FileName: string,
+    FileUrl?: string
 }
 
 export interface SettingsI {

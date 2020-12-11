@@ -1,0 +1,21 @@
+.bookList{
+    display: flex;
+    flex-flow: wrap; 
+    justify-content: center;
+}
+.bookList ion-card{
+    max-width: calc(42vw);
+    margin: 8px;
+}
+
+.bookList ion-card ion-card-title{
+    font-size: 12px !important;
+}
+.removeBtn{
+    position: absolute;
+    top: 0px;
+    right: 0;
+    background-color: rgba(255, 255, 255, 0.788);
+    border-radius: 5px;
+    
+}

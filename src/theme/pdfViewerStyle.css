@@ -8,10 +8,6 @@
     src: url("../assets/fonts/textOnlyFonts/LibreCaslonText-Bold.ttf")
 }
 
-@font-face {
-    font-family: LibreCaslonText-Italic;
-    src: url("../assets/fonts/textOnlyFonts/LibreCaslonText-Italic.ttf")
-}
 
 .bookTitleLabel{
     white-space: nowrap;
