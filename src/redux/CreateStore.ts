@@ -10,7 +10,7 @@ import localStorage from 'redux-persist/lib/storage'
 const persistConfig = {
   key: 'rainbookroot',
   storage: localStorage,
-  blacklist: ['openPdf', 'settings']
+  blacklist: ['openPdf']
 }
 
 const rootReducer = combineReducers({

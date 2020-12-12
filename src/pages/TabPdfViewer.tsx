@@ -3,6 +3,7 @@ import { IonActionSheet, IonAlert, IonButton, IonButtons, IonContent, IonFab, Io
 import { useDispatch, useSelector } from 'react-redux';
 import { SetOpenPdf } from '../redux/Actions/GeneralActions';
 import {Document, Outline, Page, pdfjs} from 'react-pdf';
+import modeColorMaker from "../components/modeColorMaker";
 
 import "../theme/pdfViewerStyle.css"
 import { addCircleOutline, chevronBackOutline, chevronForwardOutline, cloudDoneSharp, cloudOfflineSharp, cloudUploadSharp, listSharp, removeCircleOutline } from 'ionicons/icons';
@@ -34,7 +35,6 @@ const TabPdfViewer: React.FC = () => {
   const [scale, setScale] = useState<number>(1);
   const [showJumpInput, setShowJumpInput] = useState<boolean>(false);
 
-  const [pageText, setPageText] = useState<string>("");
   const [fileExists, setFileExists] = useState<boolean>(true);
   const [showToast, setShowToast] = useState<toastI>({show: false, msg: ""});
 
@@ -211,9 +211,14 @@ const TabPdfViewer: React.FC = () => {
                 }
                 lastY = item.transform[5];
             }
-            text += `<span style="font-size: ${fixFont(item.height)}px">${item.str}</span>`;
+            text += `
+            <span class="textChild" 
+              style="font-family: ${settings.fontName}; 
+              font-size: ${fixFont(item.height)}px
+
+            ">${item.str}
+            </span>`;
             if(i===textContent.items.length-1){
-              setPageText(text);
               if(textContainer){
                 textContainer.innerHTML = text;
               }
@@ -226,7 +231,7 @@ const TabPdfViewer: React.FC = () => {
 
   return (
     <IonPage>
-      <IonToolbar mode="ios" slot="start">
+      <IonToolbar mode="ios" slot="start" color={settings.modeColor==="dark"? "dark":"light"}>
         <IonButtons>
           <IonButton color="dark">
             <IonIcon icon={listSharp}></IonIcon>
@@ -254,7 +259,11 @@ const TabPdfViewer: React.FC = () => {
       </IonToolbar>
       
       <IonContent fullscreen class="contentContainer">
-        <div id="textContainer" style={{display: `${settings.TextOnly?"block":"none"}`}}></div>
+        <div id="textContainer" style={{
+            display: `${settings.TextOnly?"block":"none"}`,
+            backgroundColor: `${modeColorMaker(settings.modeColor).background}`,
+            color: `${modeColorMaker(settings.modeColor).color}`
+          }}></div>
 
         <div className="pdfContaner" style={{display: `${settings.TextOnly?"none":"block"}`}}>
           <Document

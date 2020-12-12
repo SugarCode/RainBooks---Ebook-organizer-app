@@ -50,6 +50,7 @@ const App: React.FC = () => {
   const [openSettings, setOpenSettings] = useState<boolean>(false);
   const auth = useSelector((state:any) => state.firebase.auth);
   const openPdf = useSelector((state:RootState) => state.openPdf);
+  const settings = useSelector((state: RootState)=>state.settings);
 
   useEffect(()=>{
       setTimeout(()=>{
@@ -64,10 +65,6 @@ const App: React.FC = () => {
         }
       }, 2000)
   }, [auth, openPdf])
-
-  useIonViewWillEnter(()=>{
-    console.log("entered")
-  })
 
   
   return (
@@ -84,7 +81,7 @@ const App: React.FC = () => {
               <Route path="/tab-pdf-viewer" component={TabPdfViewer} />
               <Route path="/" render={() => <Redirect to="/tab1" />} exact={true} />
             </IonRouterOutlet>
-            <IonTabBar slot="bottom" 
+            <IonTabBar slot="bottom" color={settings.modeColor==="dark"? "dark":"light"}
               // hidden={openPdf.Pdf_Opened === true?true:false}
             >
               <IonTabButton tab="tab1" href="/tab1">
@@ -105,7 +102,7 @@ const App: React.FC = () => {
         isOpen={openSettings}
         onDidDismiss={()=>setOpenSettings(false)}
       >
-         <IonHeader class="ion-no-border">
+      <IonHeader class="ion-no-border">
         <IonToolbar>
           <IonTitle>
             <h1>Settings</h1>

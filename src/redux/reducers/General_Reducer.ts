@@ -24,10 +24,15 @@ export const SettingsReducer = (state = initialSettings, action: AnyAction) => {
         // get settings as form inputs
         case SETTINGS:
             return {
-                TextOnly: action.payload.TextOnly
+                ...state,
+                TextOnly: action.payload.TextOnly,
+                modeColor: action.payload.modeColor,
+                fontName: action.payload.fontName
             }
         default:
             return state
     }
 }
+
+
 

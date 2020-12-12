@@ -1,12 +1,10 @@
-import React, { useEffect, useState } from 'react';
-import { IonButton, IonButtons, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonContent, IonHeader, IonIcon, IonInput, IonItem, IonList, IonLoading, IonPage, IonSearchbar, IonTitle, IonToolbar, useIonViewDidEnter } from '@ionic/react';
-import ExploreContainer from '../components/ExploreContainer';
+import React, { useState } from 'react';
+import { IonButton, IonCard, IonCardHeader, IonCardTitle, IonContent, IonHeader, IonIcon, IonLoading, IonPage, IonSearchbar, IonTitle, IonToolbar, useIonViewDidEnter } from '@ionic/react';
 import './Tab1.css';
-import { firebaseConnect, useFirebase, useFirebaseConnect } from 'react-redux-firebase';
+import { useFirebase } from 'react-redux-firebase';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../redux/CreateStore';
-import { closeCircleOutline, trashOutline } from 'ionicons/icons';
-import { resolve } from 'dns';
+import { trashOutline } from 'ionicons/icons';
 import { SetOpenPdf } from '../redux/Actions/GeneralActions';
 import { useHistory } from 'react-router';
 
@@ -34,23 +32,25 @@ const Tab1: React.FC = () => {
 
   // Function for Get books data from realtime db
   const getBooksData = ()=>{
-    setIsLoading(true);
-    setBookData([]);
-    return new Promise<void>((resolve, reject)=>{
-      const booksDatabase = firebase.database().ref(`${authData.displayName?.split(" ")[0]}_${authData.uid}/books`);
-      booksDatabase.once('value').then((snapshot)=> {
-        const booksObject = snapshot.val();
-        Object.keys(booksObject).map((k:string) => {
-          const nestedKey = Object.keys(booksObject[k])[0];
-          console.log((booksObject[k][nestedKey] as BookDataI));
-          setBookData((prevState)=>(
-            [...prevState, (booksObject[k][nestedKey] as BookDataI)]
-          ))
-          setIsLoading(false);
-          resolve();
-        })
-      }).catch(()=>{setIsLoading(false);reject()})
-    })
+    if(navigator.onLine){
+      setIsLoading(true);
+      setBookData([]);
+      return new Promise<void>((resolve, reject)=>{
+        const booksDatabase = firebase.database().ref(`${authData.displayName?.split(" ")[0]}_${authData.uid}/books`);
+        booksDatabase.once('value').then((snapshot)=> {
+          const booksObject = snapshot.val();
+          Object.keys(booksObject).map((k:string) => {
+            const nestedKey = Object.keys(booksObject[k])[0];
+            console.log((booksObject[k][nestedKey] as BookDataI));
+            setBookData((prevState)=>(
+              [...prevState, (booksObject[k][nestedKey] as BookDataI)]
+            ))
+            setIsLoading(false);
+            resolve();
+          })
+        }).catch(()=>{setIsLoading(false);reject()})
+      })
+    }
   }
 
   const deleteBook = (fullPath: string, storagePath: string) => {

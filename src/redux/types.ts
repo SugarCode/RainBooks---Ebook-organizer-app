@@ -1,4 +1,4 @@
-import { Type } from "typescript";
+
 
 export const SET_OPEN_PDF = "SET_OPEN_PDF";
 
@@ -14,7 +14,10 @@ export interface Open_Pdf {
 }
 
 export interface SettingsI {
-    TextOnly: boolean
+    TextOnly: boolean,
+    modeColor: string, // "dark" | "brown" | "white"
+    fontName: string // "Arapey" | "Quicksand" | "ShareTechMono" | "Unna"
+    
 }
 
 

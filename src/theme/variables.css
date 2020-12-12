@@ -6,7 +6,7 @@ http://ionicframework.com/docs/theming/ */
 /* .settingsBtn::part(native){
   border: 1px solid !important;
 } */
-*{
+*:not(.textChild){
   font-family: "Roboto" !important;
 }
 :root {
