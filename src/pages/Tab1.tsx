@@ -10,6 +10,7 @@ import { resolve } from 'dns';
 import { SetOpenPdf } from '../redux/Actions/GeneralActions';
 import { useHistory } from 'react-router';
 
+
 const Tab1: React.FC = () => {
   interface BookDataI {
     fullPath: string;
@@ -23,6 +24,8 @@ const Tab1: React.FC = () => {
   const authData = useSelector((state: RootState)=> state.firebase.auth);
   
   const [bookData, setBookData] = useState<BookDataI[]>([]);
+  const [filteredList, setFilteredList] = useState<BookDataI[]>([]);
+
   const firebase = useFirebase();
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -33,7 +36,7 @@ const Tab1: React.FC = () => {
   const getBooksData = ()=>{
     setIsLoading(true);
     setBookData([]);
-    return new Promise((resolve, reject)=>{
+    return new Promise<void>((resolve, reject)=>{
       const booksDatabase = firebase.database().ref(`${authData.displayName?.split(" ")[0]}_${authData.uid}/books`);
       booksDatabase.once('value').then((snapshot)=> {
         const booksObject = snapshot.val();
@@ -71,6 +74,38 @@ const Tab1: React.FC = () => {
     history.push("/tab-pdf-viewer")
   }
 
+
+  const handleSearchInput = (inputVal: string | undefined) => {
+    if (inputVal){
+        const _filteredList = bookData.filter((data)=>data.fileName.toLowerCase().includes(inputVal));
+        setFilteredList(_filteredList);
+    }else{
+      setFilteredList([])
+    }
+  }
+
+  interface BookCardI {
+    item:BookDataI, index:number
+  }
+  const BookCard:React.FC<BookCardI> = ({item, index})=>{
+    return (
+      <IonCard onClick={()=>{handleCardClick(item.downloadUrl, item.fileName)}} key={index} mode="ios" button>
+        {item.thumbnail? 
+        <img src={item.thumbnail} alt="book thumnail" />: null }
+        <IonCardHeader>
+          <IonCardTitle>{item.fileName}</IonCardTitle>
+        </IonCardHeader>
+        <IonButton onClick={(e)=>{
+          e.stopPropagation();
+          deleteBook(item.fullPath, item.storagePath)
+        }} size="small" fill="clear" class="removeBtn">
+          <IonIcon size="small" icon={trashOutline}></IonIcon>
+        </IonButton>
+    </IonCard>
+    )
+  }
+
+
   return (
     <IonPage>
       <IonHeader class="ion-no-border">
@@ -81,24 +116,16 @@ const Tab1: React.FC = () => {
         </IonToolbar>
       </IonHeader>
       <IonContent fullscreen>
-          <IonSearchbar mode="ios"></IonSearchbar>
+          <IonSearchbar debounce={500} onIonClear={()=>setFilteredList([])} onIonChange={(e)=>handleSearchInput(e.detail.value)} mode="ios"></IonSearchbar>
 
           <div className="bookList">
           {
-            bookData.map((item:BookDataI, index:number)=>(
-              <IonCard onClick={()=>{handleCardClick(item.downloadUrl, item.fileName)}} key={index} mode="ios" button>
-                  {item.thumbnail? 
-                  <img src={item.thumbnail} alt="book thumnail" />: null }
-                  <IonCardHeader>
-                    <IonCardTitle>{item.fileName}</IonCardTitle>
-                  </IonCardHeader>
-                  <IonButton onClick={(e)=>{
-                    e.stopPropagation();
-                    deleteBook(item.fullPath, item.storagePath)
-                  }} size="small" fill="clear" class="removeBtn">
-                    <IonIcon size="small" icon={trashOutline}></IonIcon>
-                  </IonButton>
-              </IonCard>
+            filteredList.length
+            ?filteredList.map((item:BookDataI, index:number)=>(
+              <BookCard  key ={index} item ={item} index={index} />
+            ))
+            :bookData.map((item:BookDataI, index:number)=>(
+              <BookCard  key ={index} item ={item} index={index} />
             ))
           }
           </div>

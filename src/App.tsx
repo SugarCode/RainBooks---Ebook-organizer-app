@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Redirect, Route } from 'react-router-dom';
-import { IonButton, IonButtons, IonContent, IonHeader, IonItem, IonItemDivider, IonLabel, IonList, IonPage, IonTitle, IonToggle, IonToolbar } from '@ionic/react';
+import { IonAlert, IonButton, IonButtons, IonContent, IonHeader, IonItem, IonItemDivider, IonLabel, IonList, IonPage, IonTitle, IonToggle, IonToolbar, useIonViewDidEnter, useIonViewWillEnter } from '@ionic/react';
 
 import {
   IonActionSheet,
@@ -17,6 +17,7 @@ import { addCircleOutline, bookOutline, settingsOutline } from 'ionicons/icons';
 import Tab1 from './pages/Tab1';
 import Tab2 from './pages/Tab2';
 import Tab3 from './pages/Tab3';
+
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
@@ -38,33 +39,35 @@ import '@ionic/react/css/display.css';
 import './theme/variables.css';
 import AppStartPage from './pages/AppStartPage/AppStartPage';
 import { isEmpty } from 'react-redux-firebase';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import TabPdfViewer from './pages/TabPdfViewer';
 import { RootState } from './redux/CreateStore';
-import { SetSettings } from './redux/Actions/GeneralActions';
 
 // import "./AppStyle.css";
 
+
 const App: React.FC = () => {
   const [openSettings, setOpenSettings] = useState<boolean>(false);
-  const dispatch = useDispatch();
-  const settings = useSelector((state: RootState)=>state.settings)
   const auth = useSelector((state:any) => state.firebase.auth);
-  useEffect(()=>{
-    setTimeout(()=>{
-      const settingsButton = document.querySelector(".settingsBtn");
-      if(settingsButton?.shadowRoot){
-        
-        settingsButton.shadowRoot.querySelector('.button-native')?.removeAttribute("href");
-        settingsButton.shadowRoot.querySelector('.button-native')?.addEventListener("click", ()=>{
-          console.log("open settings")
-          setOpenSettings(!openSettings)
-        })
+  const openPdf = useSelector((state:RootState) => state.openPdf);
 
-        console.log(settingsButton?.shadowRoot?.innerHTML)
-      }
-    }, 2000)
-  }, [])
+  useEffect(()=>{
+      setTimeout(()=>{
+        const settingsButton = document.querySelector(".settingsBtn");
+        if(settingsButton?.shadowRoot){
+          settingsButton.shadowRoot.querySelector('.button-native')?.removeAttribute("href");
+          settingsButton.shadowRoot.querySelector('.button-native')?.addEventListener("click", ()=>{
+            console.log("open settings")
+            setOpenSettings(!openSettings)
+          })
+          console.log(settingsButton?.shadowRoot?.innerHTML)
+        }
+      }, 2000)
+  }, [auth, openPdf])
+
+  useIonViewWillEnter(()=>{
+    console.log("entered")
+  })
 
   
   return (
@@ -98,34 +101,6 @@ const App: React.FC = () => {
     </IonReactRouter>
       }
 
-{/* Delete the following element and uncomment the upper section */}
-      {/* <IonReactRouter>
-            <IonTabs>
-              <IonRouterOutlet>
-                <Route path="/tab1" component={Tab1} exact={true} />
-                <Route path="/tab2" component={Tab2} exact={true} />
-                <Route path="/tab3" component={Tab3} />
-                <Route path="/tab-pdf-viewer" component={TabPdfViewer} />
-                <Route path="/" render={() => <Redirect to="/tab1" />} exact={true} />
-              </IonRouterOutlet>
-              <IonTabBar slot="bottom" 
-                // hidden={openPdf.Pdf_Opened === true?true:false}
-              >
-                <IonTabButton tab="tab1" href="/tab1">
-                  <IonIcon icon={bookOutline} />
-                </IonTabButton>
-                <IonTabButton tab="tab2" href="/tab2">
-                  <IonIcon icon={addCircleOutline} />
-                </IonTabButton>
-                <IonTabButton class="settingsBtn">
-                  <IonIcon icon={settingsOutline} />
-                </IonTabButton>
-              </IonTabBar>
-            </IonTabs>
-      </IonReactRouter> */}
-
-            
-
       <IonModal
         isOpen={openSettings}
         onDidDismiss={()=>setOpenSettings(false)}
@@ -141,7 +116,7 @@ const App: React.FC = () => {
         </IonToolbar>
       </IonHeader>
       <Tab3 />
-      </IonModal>
+      </IonModal>     
     </IonApp>
   )
 };

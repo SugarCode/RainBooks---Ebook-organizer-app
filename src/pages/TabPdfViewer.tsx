@@ -44,7 +44,10 @@ const TabPdfViewer: React.FC = () => {
       FilePath: "",
       FileName: "",
       FileUrl: ""
-    }))
+    }));
+
+    var textContainer = document.getElementById("textContainer");
+    if(textContainer){textContainer.innerHTML= ""}
   });
 
   const dataPathMaker = (filename:string):string => {
