@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { IonActionSheet, IonAlert, IonButton, IonButtons, IonContent, IonFab, IonFabButton, IonIcon, IonLabel, IonLoading, IonMenuButton, IonPage, IonSegment, IonSegmentButton, IonTitle, IonToast, IonToolbar, useIonViewDidEnter, useIonViewWillLeave } from '@ionic/react';
 import { useDispatch, useSelector } from 'react-redux';
-import { SetOpenPdf } from '../redux/Actions/GeneralActions';
+import { SetOpenPdf, SetSettings } from '../redux/Actions/GeneralActions';
 import {Document, Outline, Page, pdfjs} from 'react-pdf';
 import modeColorMaker from "../components/modeColorMaker";
 
@@ -37,6 +37,9 @@ const TabPdfViewer: React.FC = () => {
 
   const [fileExists, setFileExists] = useState<boolean>(true);
   const [showToast, setShowToast] = useState<toastI>({show: false, msg: ""});
+
+  
+  
 
   useIonViewWillLeave(()=>{
     dispatch(SetOpenPdf({
@@ -110,6 +113,9 @@ const TabPdfViewer: React.FC = () => {
   const onDocumentLoadSuccess = (doc:pdfjs.PDFDocumentProxy) => {
     setNumPages(doc.numPages);
     if(openPdf.FileName){
+      dispatch(SetSettings({
+        ...settings, TextOnly: false
+      }));
       const dataPath = dataPathMaker(openPdf.FileName)
       try {
           var storageRef = firebase.storage().ref(dataPath).child(openPdf.FileName);
@@ -124,9 +130,6 @@ const TabPdfViewer: React.FC = () => {
         setFileExists(false);
       }
     }
-
-
-
   }
 
   useEffect(()=>{
@@ -231,7 +234,7 @@ const TabPdfViewer: React.FC = () => {
 
   return (
     <IonPage>
-      <IonToolbar mode="ios" slot="start" color={settings.modeColor==="dark"? "dark":"light"}>
+      <IonToolbar mode="ios" slot="start" color={settings.modeColor==="dark" && settings.TextOnly? "dark":"light"}>
         <IonButtons>
           <IonButton color="dark">
             <IonIcon icon={listSharp}></IonIcon>
@@ -252,17 +255,19 @@ const TabPdfViewer: React.FC = () => {
           <IonButton onClick={()=>setScale(scale+0.1)}>
             <IonIcon icon={addCircleOutline}></IonIcon>
           </IonButton>
-          <IonButton slot="end" color="dark" onClick={()=>setShowJumpInput(!showJumpInput)}>
+          <IonButton  slot="end" onClick={()=>setShowJumpInput(!showJumpInput)}>
               {`${pageNumber}/${numPages}`}
           </IonButton>
         </IonButtons>
       </IonToolbar>
       
-      <IonContent fullscreen class="contentContainer">
+      <IonContent fullscreen class="contentContainer" 
+        color={settings.modeColor==="dark" && settings.TextOnly? "dark":"light"}
+        >
         <div id="textContainer" style={{
             display: `${settings.TextOnly?"block":"none"}`,
-            backgroundColor: `${modeColorMaker(settings.modeColor).background}`,
-            color: `${modeColorMaker(settings.modeColor).color}`
+            backgroundColor: `${modeColorMaker(settings.modeColor || "white").background}`,
+            color: `${modeColorMaker(settings.modeColor || "white").color}`
           }}></div>
 
         <div className="pdfContaner" style={{display: `${settings.TextOnly?"none":"block"}`}}>
@@ -336,13 +341,13 @@ const TabPdfViewer: React.FC = () => {
 
 
 
-    <IonToast
+    <IonToast color ="tertiary"
       isOpen={showToast.show}
       onDidDismiss={() => setShowToast({show: false, msg: ""})}
       message={showToast.msg}
       position="top"
       duration={2500}
-      translucent={true}
+      // translucent={true}
       mode="ios"
     />
     </IonPage>

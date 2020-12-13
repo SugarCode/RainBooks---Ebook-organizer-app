@@ -39,11 +39,13 @@ import '@ionic/react/css/display.css';
 import './theme/variables.css';
 import AppStartPage from './pages/AppStartPage/AppStartPage';
 import { isEmpty } from 'react-redux-firebase';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import TabPdfViewer from './pages/TabPdfViewer';
 import { RootState } from './redux/CreateStore';
 
-// import "./AppStyle.css";
+
+import "./theme/AppStyle.css";
+import { SetSettings } from './redux/Actions/GeneralActions';
 
 
 const App: React.FC = () => {
@@ -51,6 +53,8 @@ const App: React.FC = () => {
   const auth = useSelector((state:any) => state.firebase.auth);
   const openPdf = useSelector((state:RootState) => state.openPdf);
   const settings = useSelector((state: RootState)=>state.settings);
+
+  const dispatch = useDispatch();
 
   useEffect(()=>{
       setTimeout(()=>{
@@ -66,7 +70,15 @@ const App: React.FC = () => {
       }, 2000)
   }, [auth, openPdf])
 
-  
+  const handleBottomHide = ()=> {
+    dispatch(SetSettings({...settings, hideBottom: !settings.hideBottom}));
+    setTimeout(()=>{
+      dispatch(SetSettings({...settings, hideBottom: true}));
+    }, 2000)
+  }
+
+
+
   return (
     <IonApp>
       {
@@ -81,7 +93,7 @@ const App: React.FC = () => {
               <Route path="/tab-pdf-viewer" component={TabPdfViewer} />
               <Route path="/" render={() => <Redirect to="/tab1" />} exact={true} />
             </IonRouterOutlet>
-            <IonTabBar slot="bottom" color={settings.modeColor==="dark"? "dark":"light"}
+            <IonTabBar style={{display: settings.hideBottom && openPdf.FileName?"none":"flex"}} slot="bottom" color={settings.modeColor==="dark"? "dark":"light"}
               // hidden={openPdf.Pdf_Opened === true?true:false}
             >
               <IonTabButton tab="tab1" href="/tab1">
@@ -94,13 +106,18 @@ const App: React.FC = () => {
                 <IonIcon icon={settingsOutline} />
               </IonTabButton>
             </IonTabBar>
+            
           </IonTabs>
+          <div style={{display: settings.hideBottom && openPdf.FileName?"block":"none"}} onClick={()=>handleBottomHide()} className="hiddenSwitch"></div>
     </IonReactRouter>
       }
 
       <IonModal
+        showBackdrop ={true}
+        swipeToClose={true}
         isOpen={openSettings}
         onDidDismiss={()=>setOpenSettings(false)}
+        cssClass={"settingsModal"}
       >
       <IonHeader class="ion-no-border">
         <IonToolbar>

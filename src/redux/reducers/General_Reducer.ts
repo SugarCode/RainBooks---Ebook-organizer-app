@@ -27,7 +27,8 @@ export const SettingsReducer = (state = initialSettings, action: AnyAction) => {
                 ...state,
                 TextOnly: action.payload.TextOnly,
                 modeColor: action.payload.modeColor,
-                fontName: action.payload.fontName
+                fontName: action.payload.fontName,
+                hideBottom: action.payload.hideBottom
             }
         default:
             return state

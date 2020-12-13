@@ -1,0 +1,12 @@
+.hiddenSwitch{
+    width: 100vw;
+    height: 56px;
+    background-color: black;
+    opacity: 0.01;
+    position: absolute;
+    bottom: 0;
+    /* z-index: 5000; */
+}
+.settingsModal{
+    --height: 55vh;
+}

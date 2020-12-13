@@ -16,7 +16,8 @@ export interface Open_Pdf {
 export interface SettingsI {
     TextOnly: boolean,
     modeColor: string, // "dark" | "brown" | "white"
-    fontName: string // "Arapey" | "Quicksand" | "ShareTechMono" | "Unna"
+    fontName: string, // "Arapey" | "Quicksand" | "ShareTechMono" | "Unna"
+    hideBottom: boolean
     
 }
 

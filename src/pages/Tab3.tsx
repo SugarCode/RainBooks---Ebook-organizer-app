@@ -44,7 +44,6 @@ const Tab3: React.FC = () => {
               <IonToggle
                 checked={settings.TextOnly}
                 onIonChange={(e)=>{
-                  console.log(e.detail);
                   dispatch(SetSettings({
                     ...settings, TextOnly: e.detail.checked
                   }));
@@ -92,6 +91,23 @@ const Tab3: React.FC = () => {
               </IonRadioGroup>
             </IonList>
 
+            {/* Hide bottom switch */}
+            <IonItem>
+              <IonLabel>Auto hide bottom bar</IonLabel>
+              <IonToggle
+                checked={settings.hideBottom}
+                onIonChange={(e)=>{
+                  dispatch(SetSettings({
+                    ...settings, hideBottom: e.detail.checked
+                  }));
+                }}
+              ></IonToggle>
+            </IonItem>
+            <IonLabel>
+              <p style={{padding: "14px", display: settings.hideBottom?"block":"none"}}>
+                To access the bottom bar, tap at the bottom of the screen.
+              </p>
+            </IonLabel>
 
               <IonButton fill="clear" expand="block" onClick={()=>logOut()}>
                 <IonIcon slot="start" icon={logOutOutline}></IonIcon>
