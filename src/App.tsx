@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Redirect, Route } from 'react-router-dom';
-import { IonAlert, IonButton, IonButtons, IonContent, IonHeader, IonItem, IonItemDivider, IonLabel, IonList, IonPage, IonTitle, IonToggle, IonToolbar, useIonViewDidEnter, useIonViewWillEnter } from '@ionic/react';
+import { IonButton, IonButtons, IonHeader, IonTitle, IonToolbar } from '@ionic/react';
 
 import {
-  IonActionSheet,
   IonApp,
   IonIcon,
   IonModal,

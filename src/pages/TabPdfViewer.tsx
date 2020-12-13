@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { IonActionSheet, IonAlert, IonButton, IonButtons, IonContent, IonFab, IonFabButton, IonIcon, IonLabel, IonLoading, IonMenuButton, IonPage, IonSegment, IonSegmentButton, IonTitle, IonToast, IonToolbar, useIonViewDidEnter, useIonViewWillLeave } from '@ionic/react';
+import { IonAlert, IonButton, IonButtons, IonContent, IonFab, IonFabButton, IonIcon, IonLabel, IonLoading, IonPage, IonToast, IonToolbar, useIonViewWillLeave } from '@ionic/react';
 import { useDispatch, useSelector } from 'react-redux';
 import { SetOpenPdf, SetSettings } from '../redux/Actions/GeneralActions';
-import {Document, Outline, Page, pdfjs} from 'react-pdf';
+import {Document, Page, pdfjs} from 'react-pdf';
 import modeColorMaker from "../components/modeColorMaker";
 
 import "../theme/pdfViewerStyle.css"
-import { addCircleOutline, chevronBackOutline, chevronForwardOutline, cloudDoneSharp, cloudOfflineSharp, cloudUploadSharp, listSharp, removeCircleOutline } from 'ionicons/icons';
+import { addCircleOutline, chevronBackOutline, chevronForwardOutline, cloudDoneSharp, cloudOfflineSharp, listSharp, removeCircleOutline } from 'ionicons/icons';
 import { RootState } from '../redux/CreateStore';
 import { useFirebase } from 'react-redux-firebase';
 import { PDFPageProxy } from 'react-pdf/dist/Page';
@@ -103,7 +103,7 @@ const TabPdfViewer: React.FC = () => {
           console.log(snapshot)
           setFileExists(true)
           setShowToast({show: true, msg: "Book uploaded"});
-        }).catch(err=> setFileExists(false))
+        }).catch(()=> setFileExists(false))
       })
     
     

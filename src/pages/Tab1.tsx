@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { IonButton, IonCard, IonCardHeader, IonCardTitle, IonContent, IonHeader, IonIcon, IonLoading, IonPage, IonSearchbar, IonTitle, IonToolbar, useIonViewDidEnter } from '@ionic/react';
+import { IonButton, IonCard, IonCardHeader, IonCardTitle, IonContent, IonHeader, IonIcon, IonLabel, IonLoading, IonPage, IonSearchbar, IonTitle, IonToolbar, useIonViewDidEnter } from '@ionic/react';
 import './Tab1.css';
 import { useFirebase } from 'react-redux-firebase';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../redux/CreateStore';
-import { trashOutline } from 'ionicons/icons';
+import { addCircleOutline, trashOutline } from 'ionicons/icons';
 import { SetOpenPdf } from '../redux/Actions/GeneralActions';
 import { useHistory } from 'react-router';
 
@@ -118,6 +118,11 @@ const Tab1: React.FC = () => {
       <IonContent fullscreen>
           <IonSearchbar debounce={500} onIonClear={()=>setFilteredList([])} onIonChange={(e)=>handleSearchInput(e.detail.value)} mode="ios"></IonSearchbar>
 
+          {!bookData.length?
+          <IonLabel class="noBookLabel">Click the 
+            <IonIcon size="large" icon={addCircleOutline}></IonIcon>
+             button start reading your book.
+          </IonLabel>:null}
           <div className="bookList">
           {
             filteredList.length

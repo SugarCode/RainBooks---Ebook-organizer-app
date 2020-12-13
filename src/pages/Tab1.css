@@ -19,3 +19,13 @@
     border-radius: 5px;
     
 }
+.noBookLabel{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 120px;
+}
+.noBookLabel > ion-icon{
+    padding: 0 10px 0 10px;
+    color: rgb(66, 66, 66);
+}

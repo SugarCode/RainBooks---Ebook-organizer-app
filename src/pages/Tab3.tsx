@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { IonButton, IonContent, IonIcon, IonItem, IonItemDivider, IonLabel, IonList, IonListHeader, IonRadio, IonRadioGroup, IonSelect, IonSelectOption, IonToggle } from '@ionic/react';
+import { IonAvatar, IonButton, IonContent, IonIcon, IonItem, IonItemDivider, IonLabel, IonList, IonListHeader, IonRadio, IonRadioGroup, IonSelect, IonSelectOption, IonToggle } from '@ionic/react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../redux/CreateStore';
 import { SetSettings } from '../redux/Actions/GeneralActions';
@@ -13,7 +13,7 @@ const Tab3: React.FC = () => {
   const dispatch = useDispatch();
   const settings = useSelector((state: RootState)=>state.settings);
   const firebase = useFirebase();
-
+  const authData = useSelector((state: RootState)=> state.firebase.auth);
 
   const logOut = ()=> {
     firebase.logout().then(()=>{
@@ -37,8 +37,10 @@ const Tab3: React.FC = () => {
 
   return (
       <IonContent>
+
           <IonList>
-            <IonItemDivider>Interface</IonItemDivider>
+
+            <IonItemDivider>App settings</IonItemDivider>
             <IonItem>
               <IonLabel>Reading mode</IonLabel>
               <IonToggle
@@ -52,7 +54,7 @@ const Tab3: React.FC = () => {
             </IonItem>
 
             {/* Select font */}
-            <IonItem>
+            <IonItem disabled={!settings.TextOnly}>
               <IonLabel>Select font</IonLabel>
               <IonSelect value={settings.fontName} onIonChange={(e)=>{
                 dispatch(SetSettings({
@@ -76,15 +78,15 @@ const Tab3: React.FC = () => {
               }}>
                 <IonListHeader><IonLabel>Color mode</IonLabel></IonListHeader>
 
-                <IonItem>
+                <IonItem disabled={!settings.TextOnly}>
                   <IonLabel>Dark</IonLabel>
                   <IonRadio slot="end" value="dark"></IonRadio>
                 </IonItem>
-                <IonItem>
+                <IonItem disabled={!settings.TextOnly}>
                   <IonLabel>Brown</IonLabel>
                   <IonRadio slot="end" value="brown"></IonRadio>
-                </IonItem>
-                <IonItem>
+                </IonItem >
+                <IonItem disabled={!settings.TextOnly}>
                   <IonLabel>White</IonLabel>
                   <IonRadio slot="end" value="white"></IonRadio>
                 </IonItem>
@@ -92,7 +94,7 @@ const Tab3: React.FC = () => {
             </IonList>
 
             {/* Hide bottom switch */}
-            <IonItem>
+            <IonItem disabled={!settings.TextOnly}>
               <IonLabel>Auto hide bottom bar</IonLabel>
               <IonToggle
                 checked={settings.hideBottom}
@@ -109,10 +111,19 @@ const Tab3: React.FC = () => {
               </p>
             </IonLabel>
 
-              <IonButton fill="clear" expand="block" onClick={()=>logOut()}>
-                <IonIcon slot="start" icon={logOutOutline}></IonIcon>
-                Logout
-              </IonButton>
+
+            <IonItemDivider>App settings</IonItemDivider>
+            <IonItem>
+              {authData.photoURL
+                ?<IonAvatar slot="end">
+                <img src={authData.photoURL} alt="account avatar"/>
+              </IonAvatar>:null}
+              <IonLabel>{authData.displayName}</IonLabel>
+            </IonItem>
+            <IonButton fill="clear" expand="block" onClick={()=>logOut()}>
+              <IonIcon slot="start" icon={logOutOutline}></IonIcon>
+              Logout
+            </IonButton>
 
           </IonList>
       </IonContent>
