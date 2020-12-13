@@ -6,6 +6,7 @@ import { SetSettings } from '../redux/Actions/GeneralActions';
 import { logOutOutline } from 'ionicons/icons';
 import { useFirebase } from 'react-redux-firebase';
 import modeColorMaker from "../components/modeColorMaker";
+import developerlogo from "../assets/designs/developerlogo.jpg";
 import './Tab3.css';
 
 
@@ -125,6 +126,20 @@ const Tab3: React.FC = () => {
               Logout
             </IonButton>
 
+            <br/><br/><br/>
+            <IonItemDivider>Developer info</IonItemDivider>
+            <IonItem>
+              <IonAvatar slot="start">
+                <img src={developerlogo} alt="developer logo" />
+              </IonAvatar>
+              <IonLabel>Sugar Code</IonLabel>
+            </IonItem>
+            <IonItem>
+              <IonLabel>
+                <h2>Contact with app developer</h2>
+                <p>jyousufbasir@gmail.com</p>
+              </IonLabel>
+            </IonItem>
           </IonList>
       </IonContent>
   );
