@@ -12,7 +12,7 @@ import {
   IonTabs
 } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
-import { addCircleOutline, bookOutline, settingsOutline } from 'ionicons/icons';
+import { addCircleOutline, bookOutline, chevronUpSharp, settingsOutline } from 'ionicons/icons';
 import Tab1 from './pages/Tab1';
 import Tab2 from './pages/Tab2';
 import Tab3 from './pages/Tab3';
@@ -107,7 +107,9 @@ const App: React.FC = () => {
             </IonTabBar>
             
           </IonTabs>
-          <div style={{display: settings.hideBottom && openPdf.FileName?"block":"none"}} onClick={()=>handleBottomHide()} className="hiddenSwitch"></div>
+          <div style={{display: settings.hideBottom && openPdf.FileName?"flex":"none"}} onClick={()=>handleBottomHide()} className="hiddenSwitch">
+            <IonIcon size="large" icon={chevronUpSharp} />
+          </div>
     </IonReactRouter>
       }
 

@@ -1,12 +1,18 @@
 .hiddenSwitch{
     width: 100vw;
-    height: 56px;
-    background-color: black;
-    opacity: 0.05;
+    height: 26px;
+    background-color: rgba(104, 104, 104, 0.315);
+    color: #ffffff;
+    
     position: absolute;
     bottom: 0;
     /* z-index: 5000; */
+
+    display: flex;
+    justify-content: center;
+    align-items: baseline;
 }
+
 .settingsModal{
     --height: 55vh;
 }

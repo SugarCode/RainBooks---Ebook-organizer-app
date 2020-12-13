@@ -132,10 +132,6 @@ const TabPdfViewer: React.FC = () => {
     }
   }
 
-  useEffect(()=>{
-    console.log(fileExists)
-  }, [fileExists])
-
   // Handle next and prev button click
   const handleNavigationPage = (action: string) => {
     const bookName:string = openPdf.FileName.replace(/ /g, '');

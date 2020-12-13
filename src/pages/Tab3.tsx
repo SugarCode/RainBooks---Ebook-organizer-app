@@ -42,6 +42,24 @@ const Tab3: React.FC = () => {
           <IonList>
 
             <IonItemDivider>App settings</IonItemDivider>
+            {/* Hide bottom switch */}
+            <IonItem>
+              <IonLabel>Auto hide bottom bar</IonLabel>
+              <IonToggle
+                checked={settings.hideBottom}
+                onIonChange={(e)=>{
+                  dispatch(SetSettings({
+                    ...settings, hideBottom: e.detail.checked
+                  }));
+                }}
+              ></IonToggle>
+            </IonItem>
+            <IonLabel>
+              <p style={{padding: "14px", display: settings.hideBottom?"block":"none"}}>
+                To access the bottom bar, tap at the bottom of the screen.
+              </p>
+            </IonLabel>
+            
             <IonItem>
               <IonLabel>Reading mode</IonLabel>
               <IonToggle
@@ -94,26 +112,10 @@ const Tab3: React.FC = () => {
               </IonRadioGroup>
             </IonList>
 
-            {/* Hide bottom switch */}
-            <IonItem disabled={!settings.TextOnly}>
-              <IonLabel>Auto hide bottom bar</IonLabel>
-              <IonToggle
-                checked={settings.hideBottom}
-                onIonChange={(e)=>{
-                  dispatch(SetSettings({
-                    ...settings, hideBottom: e.detail.checked
-                  }));
-                }}
-              ></IonToggle>
-            </IonItem>
-            <IonLabel>
-              <p style={{padding: "14px", display: settings.hideBottom?"block":"none"}}>
-                To access the bottom bar, tap at the bottom of the screen.
-              </p>
-            </IonLabel>
+            <br/><br/>
 
 
-            <IonItemDivider>App settings</IonItemDivider>
+            <IonItemDivider>Developer info</IonItemDivider>
             <IonItem>
               {authData.photoURL
                 ?<IonAvatar slot="end">
