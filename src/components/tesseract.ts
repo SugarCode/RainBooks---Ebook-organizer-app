@@ -12,7 +12,7 @@ const recognizeText = (ctx:CanvasRenderingContext2D) => {
         await worker.load();
         await worker.loadLanguage('ben');
         await worker.initialize('ben');
-        const { data: { text } } = await worker.recognize(pageimage);
+        const { data: { text } } = await worker.recognize(ctx);
         console.log(text);
         await worker.terminate();
       })();
