@@ -11,6 +11,7 @@ import { RootState } from '../redux/CreateStore';
 import { useFirebase } from 'react-redux-firebase';
 import { PDFPageProxy } from 'react-pdf/dist/Page';
 
+import recognizeText from "../components/tesseract";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
@@ -63,12 +64,12 @@ const TabPdfViewer: React.FC = () => {
   const thumbmaker = (doc:pdfjs.PDFDocumentProxy) => {
     return new Promise((resolve, reject)=>{
       const imageMaker = async (page:pdfjs.PDFPageProxy) => {
-        const viewPort = page.getViewport({scale:0.3})
+        const viewPort = page.getViewport({scale:0.6})
         const widht = viewPort.width; const height = viewPort.height;
         var canvas = document.createElement("canvas");
         canvas.height = height; canvas.width = widht;
         // @ts-ignore: Unreachable code error
-        return page.render({canvasContext: canvas.getContext("2d"), viewport: viewPort}).promise.then(()=> canvas.toDataURL("image/webp", 0.5))
+        return page.render({canvasContext: canvas.getContext("2d"), viewport: viewPort}).promise.then(()=> canvas.toDataURL("image/webp", 0.2))
       }
       try{
         doc.getPage(1).then(imageMaker).then((canvas)=>{
@@ -81,6 +82,20 @@ const TabPdfViewer: React.FC = () => {
 
   }
   
+  const recogText = () => {
+    const pageCanvas = document.getElementsByClassName("react-pdf__Page__canvas")[0];
+    if(pageCanvas){
+      let ctx = (pageCanvas as HTMLCanvasElement).getContext("2d");
+      if(ctx){
+        recognizeText(ctx);
+      }else{
+        console.log("ctx not found")
+      }
+    }else{
+      console.log("canvas element not found");
+    }
+  }
+
   // Upload Book file
   const uploadFile = (doc:pdfjs.PDFDocumentProxy)=> {
       setShowToast({show: true, msg: `Uploading book - ${formatBytes(openPdf.FilePath.size)}`});
@@ -186,6 +201,7 @@ const TabPdfViewer: React.FC = () => {
 
 
   const getText = (page:PDFPageProxy) => {
+    recogText();
     var fixFont = (fontHeight:number)=>{
         if(fontHeight <= 10){
             return 18

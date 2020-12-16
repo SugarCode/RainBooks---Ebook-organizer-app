@@ -1,15 +1,17 @@
-import React, { ChangeEvent, useState } from 'react';
+import React, { useState } from 'react';
 import { IonAvatar, IonButton, IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle, IonContent, IonHeader, IonIcon, IonItem, IonLabel, IonList, IonPage, IonTitle, IonToast, IonToolbar } from '@ionic/react';
-import ExploreContainer from '../components/ExploreContainer';
-import './Tab2.css';
 import { addOutline } from 'ionicons/icons';
-
-import FileManagerLogo from "../assets/designs/select file tutorial logos/file manager.png";
-import FolderLogo from "../assets/designs/select file tutorial logos/folder.png"
-import FileSelectedLogo from "../assets/designs/select file tutorial logos/file selected.png";
 import { useHistory } from 'react-router';
 import { useDispatch } from 'react-redux';
 import { SetOpenPdf } from '../redux/Actions/GeneralActions';
+
+// importing images
+import FileManagerLogo from "../assets/designs/select file tutorial logos/file manager.png";
+import FolderLogo from "../assets/designs/select file tutorial logos/folder.png"
+import FileSelectedLogo from "../assets/designs/select file tutorial logos/file selected.png";
+// tab2 styles
+import './Tab2.css';
+
 
 const Tab2: React.FC = () => {
   interface toastI {
@@ -20,10 +22,15 @@ const Tab2: React.FC = () => {
   const history = useHistory();
   const dispatch = useDispatch();
 
+  /**
+   * Handle html input file change event
+   * 1. Checks if the file is pdf or not, 
+   * 2. set selected pdf information to redux state, 
+   * 3. navigate to pdf viewer page
+   */
   const handleAddBook = (e:React.ChangeEvent<HTMLInputElement>)=> {
     if(e.target.files){
       const file = e.target.files[0];
-      console.log(file.type)
       if(file.type === "application/pdf"){
         dispatch(SetOpenPdf({
           Pdf_Opened: true,

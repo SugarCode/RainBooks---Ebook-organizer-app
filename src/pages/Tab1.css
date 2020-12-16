@@ -7,7 +7,9 @@
     max-width: calc(42vw);
     margin: 8px;
 }
-
+.bookList ion-card img{
+    width: 100%;
+}
 .bookList ion-card ion-card-title{
     font-size: 12px !important;
 }

@@ -10,6 +10,9 @@ import { useHistory } from 'react-router';
 
 
 const Tab1: React.FC = () => {
+  /**
+   * Interface for data retrive from firebase realtime db
+   */
   interface BookDataI {
     fullPath: string;
     fileName: string;
@@ -20,11 +23,9 @@ const Tab1: React.FC = () => {
   }
   
   const authData = useSelector((state: RootState)=> state.firebase.auth);
-  
+  const firebase = useFirebase();
   const [bookData, setBookData] = useState<BookDataI[]>([]);
   const [filteredList, setFilteredList] = useState<BookDataI[]>([]);
-
-  const firebase = useFirebase();
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const dispatch = useDispatch();
