@@ -2,10 +2,7 @@ import { createWorker } from 'tesseract.js';
 import pageimage from "../assets/designs/pageimage.png";
 
 const worker = createWorker({
-    workerPath: "../../node_modules/tesseract.js/dist/worker.min.js",
-    langPath: "../assets/langdata",
-    corePath: "../../node_modules/tesseract.js-core/tesseract-core.wasm.js",
-    
+    logger: (m) => console.log(m),
 });
 
 
