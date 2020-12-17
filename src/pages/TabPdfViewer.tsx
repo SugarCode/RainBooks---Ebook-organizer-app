@@ -82,17 +82,22 @@ const TabPdfViewer: React.FC = () => {
 
   }
   
-  const recogText = () => {
-    const pageCanvas = document.getElementsByClassName("react-pdf__Page__canvas")[0];
-    if(pageCanvas){
-      let ctx = (pageCanvas as HTMLCanvasElement).getContext("2d");
-      if(ctx){
-        recognizeText(ctx);
-      }else{
-        console.log("ctx not found")
-      }
-    }else{
-      console.log("canvas element not found");
+  const recogText = (page:pdfjs.PDFPageProxy) => {
+    const imageMaker = async (page:pdfjs.PDFPageProxy) => {
+      const viewPort = page.getViewport({scale:1})
+      const widht = viewPort.width; const height = viewPort.height;
+      var canvas = document.createElement("canvas");
+      canvas.height = height; canvas.width = widht;
+      // @ts-ignore: Unreachable code error
+      return page.render({canvasContext: canvas.getContext("2d"), viewport: viewPort}).promise.then(()=> canvas.toDataURL())
+    }
+
+    try{
+      imageMaker(page).then((img)=>{
+        recognizeText(img)
+      })
+    }catch(err){
+      console.log(err)
     }
   }
 
@@ -201,7 +206,7 @@ const TabPdfViewer: React.FC = () => {
 
 
   const getText = (page:PDFPageProxy) => {
-    recogText();
+    recogText(page);
     var fixFont = (fontHeight:number)=>{
         if(fontHeight <= 10){
             return 18
